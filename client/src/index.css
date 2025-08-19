@@ -1,0 +1,19 @@
+/* Import Tailwind CSS's base, components, and utilities layers. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Define global styles that apply to the entire application. */
+body {
+  /* Set the default font family to Rubik, with a generic sans-serif fallback. */
+  font-family: 'Rubik', sans-serif;
+  
+  /* Set a dark fallback background color that matches the new image. */
+  background-color: #111827; /* A dark slate color */
+  
+  /* Apply the new background texture from your assets folder. */
+  background-image: url('/assets/Archesblack.png');
+  
+  /* Set a light default text color for better readability on the dark background. */
+  color: #d1d5db; /* A light gray color */
+}

@@ -1,0 +1,41 @@
+# Dependencies
+# Ignore node_modules folders in the root, client, and server directories
+**/node_modules
+
+# Build output
+# Ignore the distribution folder created by Vite
+/client/dist
+
+# Logs
+# Ignore common log files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+# Never commit your .env file as it contains sensitive credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE / Editor directories
+# Ignore configuration files from popular code editors
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System files
+# Ignore system files that can be generated automatically
+.DS_Store
+Thumbs.db
+
+# Optional: Test reports
+coverage
