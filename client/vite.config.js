@@ -1,56 +1,35 @@
-// // import { defineConfig } from 'vite';
-// // import react from '@vitejs/plugin-react';
 
-// // // https://vitejs.dev/config/
-// // export default defineConfig({
-// //   plugins: [react()],
-// //   server: {
-// //     proxy: {
-// //       // All requests starting with /api will be sent to the backend server
-// //       '/api': {
-// //         target: 'http://localhost:3001',
-// //         changeOrigin: true,
-// //       },
-// //     },
-// //   },
-// // });
+// import { defineConfig } from 'vite'
+// import react from '@vitejs/plugin-react'
+// import tailwindcss from 'tailwindcss'
+// import autoprefixer from 'autoprefixer'
 
-// import { defineConfig } from 'vite';
-// import react from '@vitejs/plugin-react';
-
-// // https://vitejs.dev/config/
 // export default defineConfig({
 //   plugins: [react()],
 //   server: {
 //     proxy: {
-//       // All requests starting with /api will be sent to the backend server
 //       '/api': {
 //         target: 'http://localhost:3001',
 //         changeOrigin: true,
 //       },
 //     },
 //   },
-//   // Add this CSS configuration for Tailwind
 //   css: {
 //     postcss: {
 //       plugins: [
-//         require('tailwindcss'),
-//         require('autoprefixer'),
+//         tailwindcss(),
+//         autoprefixer(),
 //       ],
 //     },
 //   },
-//   // Optional: Optimize build for Tailwind
-//   build: {
-//     cssCodeSplit: true,
-//   }
-// });
-
+// })
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -68,5 +47,14 @@ export default defineConfig({
         autoprefixer(),
       ],
     },
+  },
+  optimizeDeps: {
+    include: ['@canvasjs/react-charts'], // 👈 Force Vite to pre-bundle this CJS lib
+  },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true, // 👈 Allow CJS + ESM in same package
+    },
+    cssCodeSplit: true, // keep your Tailwind optimization
   },
 })
