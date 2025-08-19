@@ -1,14 +1,13 @@
 
 
-
 // import passport from "passport";
 // import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 // import dotenv from "dotenv";
-// import { pool } from "./db.js";  // ✅ correct relative path
+// import { pool } from "./db.js";
 
 // dotenv.config();
 
-// // Dynamic callback URL (local vs Render production)
+// // Dynamic callback URL (Render vs Local)
 // const callbackURL =
 //   process.env.NODE_ENV === "production"
 //     ? `${process.env.RENDER_EXTERNAL_URL}/api/auth/google/callback`
@@ -19,29 +18,28 @@
 //     {
 //       clientID: process.env.OAUTH_CLIENT_ID,
 //       clientSecret: process.env.OAUTH_SECRET,
-//       callbackURL, // ✅ clean shorthand
+//       callbackURL,
 //     },
 //     async (accessToken, refreshToken, profile, done) => {
 //       try {
-//         // Check if user exists
 //         const { rows } = await pool.query(
 //           "SELECT * FROM users WHERE google_id = $1",
 //           [profile.id]
 //         );
 
+//         let user;
 //         if (rows.length > 0) {
-//           return done(null, rows[0]);
+//           user = rows[0];
+//         } else {
+//           const result = await pool.query(
+//             `INSERT INTO users (google_id, name, email)
+//              VALUES ($1, $2, $3) RETURNING *`,
+//             [profile.id, profile.displayName, profile.emails[0].value]
+//           );
+//           user = result.rows[0];
 //         }
 
-//         // Create new user if not found
-//         const result = await pool.query(
-//           `INSERT INTO users (google_id, name, email)
-//            VALUES ($1, $2, $3)
-//            RETURNING *`,
-//           [profile.id, profile.displayName, profile.emails[0].value]
-//         );
-
-//         return done(null, result.rows[0]);
+//         return done(null, user);
 //       } catch (err) {
 //         console.error("Passport Strategy Error:", err);
 //         return done(err, null);
@@ -50,12 +48,10 @@
 //   )
 // );
 
-// // Serialize user into session
 // passport.serializeUser((user, done) => {
-//   done(null, user.id);
+//   done(null, user.id); // store user.id in session
 // });
 
-// // Deserialize user from session
 // passport.deserializeUser(async (id, done) => {
 //   try {
 //     const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
@@ -66,7 +62,9 @@
 //   }
 // });
 
-// export default passport; // ✅ Always export
+// export { passport }; // named export for clarity
+
+
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -75,7 +73,7 @@ import { pool } from "./db.js";
 
 dotenv.config();
 
-// Dynamic callback URL (Render vs Local)
+// ✅ Dynamic callback URL
 const callbackURL =
   process.env.NODE_ENV === "production"
     ? `${process.env.RENDER_EXTERNAL_URL}/api/auth/google/callback`
@@ -117,7 +115,7 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.id); // store user.id in session
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
@@ -130,4 +128,4 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-export { passport }; // named export for clarity
+export { passport };
