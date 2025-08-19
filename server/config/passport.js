@@ -1,5 +1,6 @@
 
 
+
 // import passport from "passport";
 // import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 // import dotenv from "dotenv";
@@ -7,7 +8,7 @@
 
 // dotenv.config();
 
-// // Dynamic callback URL (Render vs Local)
+// // ✅ Dynamic callback URL
 // const callbackURL =
 //   process.env.NODE_ENV === "production"
 //     ? `${process.env.RENDER_EXTERNAL_URL}/api/auth/google/callback`
@@ -49,7 +50,7 @@
 // );
 
 // passport.serializeUser((user, done) => {
-//   done(null, user.id); // store user.id in session
+//   done(null, user.id);
 // });
 
 // passport.deserializeUser(async (id, done) => {
@@ -62,10 +63,11 @@
 //   }
 // });
 
-// export { passport }; // named export for clarity
+// export { passport };
 
 
 
+// server/config/passport.js
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import dotenv from "dotenv";
@@ -73,7 +75,7 @@ import { pool } from "./db.js";
 
 dotenv.config();
 
-// ✅ Dynamic callback URL
+// ✅ Dynamic callback URL (Render vs Local)
 const callbackURL =
   process.env.NODE_ENV === "production"
     ? `${process.env.RENDER_EXTERNAL_URL}/api/auth/google/callback`
@@ -88,6 +90,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        // Check if user exists
         const { rows } = await pool.query(
           "SELECT * FROM users WHERE google_id = $1",
           [profile.id]
@@ -97,6 +100,7 @@ passport.use(
         if (rows.length > 0) {
           user = rows[0];
         } else {
+          // Insert new user
           const result = await pool.query(
             `INSERT INTO users (google_id, name, email)
              VALUES ($1, $2, $3) RETURNING *`,
@@ -114,10 +118,12 @@ passport.use(
   )
 );
 
+// ✅ Serialize user into session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
+// ✅ Deserialize user from session
 passport.deserializeUser(async (id, done) => {
   try {
     const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);

@@ -1,12 +1,14 @@
 
 
 
+
+
 // import express from "express";
 // import path from "path";
 // import dotenv from "dotenv";
 // import cors from "cors";
 // import session from "express-session";
-// import { passport } from "./config/passport.js"; // ✅
+// import { passport } from "./config/passport.js";
 // import helmet from "helmet";
 // import { fileURLToPath } from "url";
 // import PgSession from "connect-pg-simple";
@@ -21,19 +23,24 @@
 // const app = express();
 // const port = process.env.PORT || 3001;
 
+// app.set("trust proxy", 1);
 // app.use(helmet());
+
+// // ✅ CORS setup for Render frontend
 // app.use(cors({
 //   origin: process.env.CLIENT_URL,
-//   credentials: true, // ✅ needed so cookies are sent
+//   credentials: true,
 // }));
+
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
-// // Sessions
+// // ✅ Sessions in Postgres
 // const sessionStore = new (PgSession(session))({
 //   pool,
 //   tableName: "session",
 // });
+
 // app.use(
 //   session({
 //     store: sessionStore,
@@ -41,24 +48,24 @@
 //     resave: false,
 //     saveUninitialized: false,
 //     cookie: {
-//       secure: process.env.NODE_ENV === "production",
+//       secure: true,        // ✅ Required for Render HTTPS
 //       httpOnly: true,
-//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//       sameSite: "none",    // ✅ Required for cross-site cookies
 //       maxAge: 24 * 60 * 60 * 1000,
 //     },
 //   })
 // );
 
-// // Passport
+// // ✅ Passport middleware
 // app.use(passport.initialize());
 // app.use(passport.session());
 
-// // Routes
+// // ✅ Routes
 // app.use("/api/auth", authRouter);
 // app.use("/api/household", householdRouter);
 // app.use("/api/contact", contactUsRouter);
 
-// // Deployment
+// // ✅ Serve frontend build in production
 // if (process.env.NODE_ENV === "production") {
 //   const __filename = fileURLToPath(import.meta.url);
 //   const __dirname = path.dirname(__filename);
@@ -70,12 +77,14 @@
 //   });
 // }
 
-// app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
+// app.listen(port, () => {
+//   console.log(`🚀 Server running on port ${port}`);
+//   console.log(`🌍 CLIENT_URL: ${process.env.CLIENT_URL}`);
+//   console.log(`🌍 RENDER_EXTERNAL_URL: ${process.env.RENDER_EXTERNAL_URL}`);
+// });
 
 
-
-
-
+// server/index.js
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -96,18 +105,23 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// ✅ Trust proxy (needed on Render for cookies to work)
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
-// ✅ CORS setup for Render frontend
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-}));
+// ✅ CORS setup for Render + local
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Sessions in Postgres
+// ✅ Sessions stored in Postgres
 const sessionStore = new (PgSession(session))({
   pool,
   tableName: "session",
@@ -120,13 +134,19 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true,        // ✅ Required for Render HTTPS
       httpOnly: true,
-      sameSite: "none",    // ✅ Required for cross-site cookies
-      maxAge: 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", // true only in prod (Render)
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   })
 );
+
+// 🔍 Debugging helper: log session IDs
+app.use((req, res, next) => {
+  console.log("Session ID:", req.sessionID);
+  next();
+});
 
 // ✅ Passport middleware
 app.use(passport.initialize());
