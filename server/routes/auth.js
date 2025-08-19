@@ -67,7 +67,7 @@ router.get(
   (req, res) => {
     // ✅ Ensure session is saved before redirect
     req.session.save(() => {
-      res.redirect(`${process.env.CLIENT_URL}/calculator`);
+      res.redirect(`${process.env.CLIENT_URL}/`);
     });
   }
 );
