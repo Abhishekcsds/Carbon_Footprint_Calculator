@@ -57,7 +57,7 @@ const AboutUs = () => {
             </div>
 
             {/* Co-founders */}
-            {['Harshita Dubey', 'Shubham Sharma', 'Mohd Suhel Imshad', 'Naman Verma'].map((name, index) => (
+            {['Harshita Dubey', 'Shubham Sharma', 'Suhel Imshad', 'Naman Verma'].map((name, index) => (
               <div key={index} className="text-center">
                 <div className="bg-gray-100 rounded-full w-32 h-32 mx-auto mb-4 flex items-center justify-center">
                   <span className="text-4xl text-gray-500">{index % 2 === 0 ? '👩‍💼' : '👨‍💼'}</span>
