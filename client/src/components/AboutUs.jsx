@@ -57,15 +57,21 @@ const AboutUs = () => {
             </div>
 
             {/* Co-founders */}
-            {['Harshita Dubey', 'Shubham Sharma', 'Suhel Imshad', 'Naman Verma'].map((name, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-gray-100 rounded-full w-32 h-32 mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-4xl text-gray-500">{index % 2 === 0 ? '👩‍💼' : '👨‍💼'}</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-800">{name}</h3>
-                <p className="text-green-600 font-medium">Co-founder</p>
-              </div>
-            ))}
+{[
+  { name: 'Harshita Dubey', icon: '👩‍💼' },
+  { name: 'Shubham Sharma', icon: '👨‍💼' },
+  { name: 'Mohd Suhel Imshad', icon: '👨‍💼' }, // ✅ fixed to male
+  { name: 'Naman Verma', icon: '👨‍💼' },
+].map((member, index) => (
+  <div key={index} className="text-center">
+    <div className="bg-gray-100 rounded-full w-32 h-32 mx-auto mb-4 flex items-center justify-center">
+      <span className="text-4xl text-gray-500">{member.icon}</span>
+    </div>
+    <h3 className="text-xl font-bold text-gray-800">{member.name}</h3>
+    <p className="text-green-600 font-medium">Co-founder</p>
+  </div>
+))}
+
           </div>
         </section>
 
