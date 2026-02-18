@@ -20,7 +20,7 @@ const EMISSION_FACTORS = {
 // Function to generate recommendations from Gemini AI
 async function getRecommendations(data) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const prompt = `
       Based on the following monthly household carbon footprint data from a user in India, provide personalized, actionable, and concise recommendations to reduce their emissions. The user's goal is to be more sustainable.
 
