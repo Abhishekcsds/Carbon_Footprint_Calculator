@@ -127,7 +127,8 @@ const EMISSION_FACTORS = {
 async function getRecommendations(data) {
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash"
+      model: "gemini-1.0-pro"
+
     });
 
     const electricityPercent = data.contributions?.[0]?.y?.toFixed(1) || 0;
