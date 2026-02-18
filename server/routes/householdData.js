@@ -1,76 +1,4 @@
-// import express from 'express';
-// import { query } from '../config/db.js';
-// import { GoogleGenerativeAI } from '@google/generative-ai';
-// import dotenv from 'dotenv';
 
-// dotenv.config();
-// const router = express.Router();
-// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// // Function to generate recommendations from Gemini AI
-// async function getRecommendations(commonFormData, familyFormData) {
-//   try {
-//     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-//     const prompt = `
-//       Based on the following household carbon footprint data, provide personalized recommendations to reduce their carbon footprint. Format the response with clear headings and bullet points for easy display on a webpage. The recommendations should be concise (around 100 words).
-
-//       Household Data: ${JSON.stringify(commonFormData)}
-//       Family Members Data: ${JSON.stringify(familyFormData)}
-//     `;
-
-//     const result = await model.generateContent(prompt);
-//     const response = await result.response;
-//     return await response.text();
-//   } catch (error) {
-//     console.error('Error generating recommendations from Gemini:', error);
-//     return "Sorry, we could not generate recommendations at this time. Please try reducing energy consumption and using public transport.";
-//   }
-// }
-
-// // Route: /api/household/save - Saves calculator data and generates recommendations
-// router.post('/save', async (req, res) => {
-//   if (!req.isAuthenticated()) {
-//     return res.status(401).json({ message: 'User not authenticated' });
-//   }
-
-//   const { commonFormData, familyFormData } = req.body;
-//   const userId = req.user.id;
-
-//   if (!commonFormData || !familyFormData) {
-//     return res.status(400).json({ message: 'Missing form data.' });
-//   }
-
-//   try {
-//     const commonResult = await query(
-//       `INSERT INTO household_common (user_id, electricity_usage, water_usage, waste_generation, gas_cylinder) 
-//        VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-//       [userId, commonFormData.electricityUsage, commonFormData.waterUsage, commonFormData.wasteGeneration, commonFormData.gasCylinder]
-//     );
-//     const householdCommonId = commonResult.rows[0].id;
-
-//     for (const member of familyFormData) {
-//       await query(
-//         `INSERT INTO family_members (household_common_id, name, private_vehicle, public_vehicle, air_travel, veg_meals, non_veg_meals) 
-//          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-//         [householdCommonId, member.name, member.transportation.privateVehicle, member.transportation.publicVehicle, member.transportation.airTravel, member.food.vegMeals, member.food.nonVegMeals]
-//       );
-//     }
-
-//     const recommendationText = await getRecommendations(commonFormData, familyFormData);
-
-//     await query(
-//       `INSERT INTO recommendations (user_id, household_common_id, recommendation) VALUES ($1, $2, $3)`,
-//       [userId, householdCommonId, recommendationText]
-//     );
-
-//     res.status(200).json({ recommendation: recommendationText });
-//   } catch (error) {
-//     console.error('Error saving data:', error);
-//     res.status(500).json({ message: 'Error saving data' });
-//   }
-// });
-
-// export default router;
 
 
 import express from 'express';
@@ -92,7 +20,7 @@ const EMISSION_FACTORS = {
 // Function to generate recommendations from Gemini AI
 async function getRecommendations(data) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const prompt = `
       Based on the following monthly household carbon footprint data from a user in India, provide personalized, actionable, and concise recommendations to reduce their emissions. The user's goal is to be more sustainable.
 
