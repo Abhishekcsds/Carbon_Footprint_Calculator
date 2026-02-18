@@ -1,6 +1,3 @@
-
-
-
 // server/config/passport.js
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -24,22 +21,29 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user exists
+        // ✅ Check if user already exists
         const { rows } = await pool.query(
           "SELECT * FROM users WHERE google_id = $1",
           [profile.id]
         );
 
         let user;
+
         if (rows.length > 0) {
           user = rows[0];
         } else {
-          // Insert new user
+          // ✅ FIXED INSERT QUERY (added type column)
           const result = await pool.query(
-            `INSERT INTO users (google_id, name, email)
-             VALUES ($1, $2, $3) RETURNING *`,
-            [profile.id, profile.displayName, profile.emails[0].value]
+            `INSERT INTO users (google_id, name, email, type)
+             VALUES ($1, $2, $3, 'google')
+             RETURNING *`,
+            [
+              profile.id,
+              profile.displayName,
+              profile.emails?.[0]?.value || null,
+            ]
           );
+
           user = result.rows[0];
         }
 
@@ -52,7 +56,7 @@ passport.use(
   )
 );
 
-// ✅ Serialize user into session
+// ✅ Serialize user to session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -60,8 +64,15 @@ passport.serializeUser((user, done) => {
 // ✅ Deserialize user from session
 passport.deserializeUser(async (id, done) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-    if (rows.length === 0) return done(new Error("User not found"));
+    const { rows } = await pool.query(
+      "SELECT * FROM users WHERE id = $1",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return done(new Error("User not found"));
+    }
+
     done(null, rows[0]);
   } catch (err) {
     done(err);
@@ -69,3 +80,4 @@ passport.deserializeUser(async (id, done) => {
 });
 
 export { passport };
+
